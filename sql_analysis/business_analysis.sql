@@ -51,3 +51,17 @@ FROM (
     GROUP BY user_id
     HAVING COUNT(order_id) > 1
 ) AS customer_orders;
+
+--Website traffic and conversion analysis--
+SELECT
+    COUNT(DISTINCT ws.website_session_id) AS total_sessions,
+    COUNT(DISTINCT o.website_session_id) AS converted_sessions,
+    ROUND(
+        COUNT(DISTINCT o.website_session_id) * 100.0 /
+        COUNT(DISTINCT ws.website_session_id), 2
+    ) AS conversion_rate
+
+FROM read_csv_auto('../data/website_sessions.csv') AS ws
+
+LEFT JOIN read_csv_auto('../data/orders.csv') AS o
+    ON ws.website_session_id = o.website_session_id;
